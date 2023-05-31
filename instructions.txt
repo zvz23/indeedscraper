@@ -1,0 +1,173 @@
+
+The following commands must be executed in the extracted folder.
+Open cmd and then cd to the extracted folder, then enter dir if it lists the files (main.py urls.py) then
+you are in the right directory
+
+Before scraping, we must login to indeed to access the datas. 
+Enter this command:
+
+"""""""""""""""""""""
+python main.py login
+"""""""""""""""""""""
+
+This command will open chrome and will automatically go to the login page.
+After you login, go to cmd and hit Enter
+
+
+After logging in we can now start scraping
+Enter this command:
+
+""""""""""""""""""
+python main.py all
+""""""""""""""""""
+
+This will open chrome and scrape all the urls from the database. All the data will be saved to the database.
+The reason why I save the datas in the database is to persist the data. We can export the datas in to csv,
+using the "export" command, this will be explained later
+
+
+If you want to scrape a specific job. Enter this command:
+
+""""""""""""""""""""""""""""""""""""
+python main.py all --job "job name"
+""""""""""""""""""""""""""""""""""""
+
+Example:
+
+""""""""""""""""""""""""""""""""""""
+python main.py all --job "crew member"
+""""""""""""""""""""""""""""""""""""
+
+If you want to only scrape specific year and month
+Enter the command below:
+
+"""""""""""""""""""""""""""""""""
+python main.py date --date [date]
+"""""""""""""""""""""""""""""""""
+Example:
+
+"""""""""""""""""""""""""""""""""
+python main.py date --date 202202
+"""""""""""""""""""""""""""""""""
+
+
+The example command will scrape only the February 2022 datas in all urls.
+The first 4 numbers is the year (2022) and the last two numbers is the month (02)
+It is required to put them together with no spaces
+
+
+To export the gathered datas use the following command:
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+python main.py export --job [job name] --location [location] --month [month] --year [year]
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+To export all datas. Enter this command:
+
+"""""""""""""""""""""
+python main.py export
+"""""""""""""""""""""
+
+This command will export all datas
+
+
+You can export with conditions
+Note: The conditions must be inside quotes ""
+
+Example:
+
+""""""""""""""""""""""""""""""""""
+python main.py export --job "cook"
+""""""""""""""""""""""""""""""""""
+
+This command will export all data with a "cook" job
+
+
+Example:
+
+"""""""""""""""""""""""""""""""""""
+python main.py --month "february"
+"""""""""""""""""""""""""""""""""""
+
+This command will export all datas with a month of "february"
+
+Example:
+
+Note the location must be the same when you search in the website
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+python main.py export --job "software developer" --location "allentown, pa" --month "february" --year "2023"
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+This command will export datas with a software developer job with the date February 2023 at allentown, pa
+
+
+The export commands will output a csv file named with the current date and time, you can find the csv file in
+the same folder
+
+
+
+The program will know if the specific url has been successfully scrapped.
+If you run a scraping command like "python main.py all" or "python main.py date" it will only scrape 
+urls that are not successfully scrapped.
+
+For example if we only have this urls:
+https://employers.indeed.com/hiring-insights?q=crew+member&l=abilene%2C+tx&country=US
+https://employers.indeed.com/hiring-insights?q=crew+member&l=akron%2C+oh&country=US
+
+
+It will first scrape the first url, if the scraper is done scraping all the month data from that url it will be marked
+as complete in the database, then it will proceed to next url. If the next url was interrupted while scraping like
+force termination, shutdown, and any actions that can terminate the program, if you run the scraping command again it
+will only scrape that url
+
+
+If you want to start all over again:
+
+Enter this command:
+
+""""""""""""""""""""
+python main.py reset
+""""""""""""""""""""
+
+This command will flag the finished urls to unfinished, meaning when you run a scraping command it will scrapped all urls
+even if there are urls that has been scrapped successfully
+
+
+
+To add urls to the database please enter this command:
+
+"""""""""""""""""""""
+python main.py addurl
+"""""""""""""""""""""
+
+This command will show a prompt in the terminal
+
+Note:
+
+Before you add url make sure the fields you are about to enter is valid in the website
+
+
+
+
+
+
+
+
+
+
+
+Note: 
+DO NOT CLICK ANYTHING IN THE TAB TO AVOID ERRORS
+
+
+
+
+
+
+
+
+
+
+
+

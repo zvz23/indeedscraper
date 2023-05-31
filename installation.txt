@@ -1,0 +1,27 @@
+Requirements:
+1. Update Google Chrome
+2. Python 3.11
+
+Python 3.11 installation guide
+1. Download the installation file https://www.python.org/ftp/python/3.11.2/python-3.11.2-amd64.exe
+2. Watch this video on how to install https://www.youtube.com/watch?v=VkdkwxGka3M
+3. The installation ends at 1:37
+
+
+Script installation guide
+1. Extract the zip file
+2. Open cmd and cd to the extracted folder
+3. Make sure you are in the right directory enter "dir" without quotes if it contains these files (main.py, urls.py, export.py)
+   then you are in the right folder
+4. Enter the command below:
+
+pip3 install -r requirements.txt
+
+That command will install the dependencies of the scraper
+
+5. After the installation has finished you can proceed to the next guide instructions.txt
+
+
+
+
+
