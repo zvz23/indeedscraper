@@ -45,14 +45,9 @@ def wait_invi(driver: uc.Chrome, seconds: float):
     )
 
 def wait_vis(driver: uc.Chrome, seconds: float):
-    try:
-
-        WebDriverWait(driver, seconds).until(
-            EC.presence_of_element_located((By.XPATH, "//div[contains(@class, 'ia-ThreeBounces')]"))
-        )
-    except:
-        print("Error wait_vis")
-        pass
+    WebDriverWait(driver, seconds).until(
+        EC.presence_of_element_located((By.XPATH, "//div[contains(@class, 'ia-ThreeBounces')]"))
+    )
 
 
 # Gets the selected month from the select input of the website
