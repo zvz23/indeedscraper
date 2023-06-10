@@ -32,6 +32,11 @@ def save_url(job: str, location: str, country: str, url: str):
     with sqlite3.connect(DB_NAME) as conn:
         cursor = conn.cursor()
         cursor.execute(f"INSERT OR IGNORE INTO {URLS_TABLE_NAME}(JOB, LOCATION, COUNTRY, URL) VALUES(?, ?, ?, ?)", [job, location, country, url])
+    
+def save_urls(urls: list):
+    with sqlite3.connect(DB_NAME) as conn:
+        cursor = conn.cursor()
+        cursor.executemany(f"INSERT OR IGNORE INTO {URLS_TABLE_NAME}(JOB, LOCATION, COUNTRY, URL) VALUES(?, ?, ?, ?)", urls)
 
 def is_url_exists(url: str):
     with sqlite3.connect(DB_NAME) as conn:
@@ -132,6 +137,12 @@ def get_all_urls():
         cursor = conn.cursor()
         cursor.execute(f"SELECT URL FROM {URLS_TABLE_NAME}")
         return [r[0] for r in cursor.fetchall()]
+
+def get_all_urls_row():
+    with sqlite3.connect(DB_NAME) as conn:
+        cursor = conn.cursor()
+        cursor.execute(f"SELECT JOB, LOCATION, COUNTRY, URL FROM {URLS_TABLE_NAME}")
+        return cursor.fetchall()
     
 def get_all_urls_with_conditions(job: str = None, location: str = None, country: str = None):
     with sqlite3.connect(DB_NAME) as conn:
