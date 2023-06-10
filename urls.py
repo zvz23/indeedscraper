@@ -51,21 +51,16 @@ def generate_and_save_urls_from_jobs_and_locations_csv():
         raise FileNotFoundError('Cannot find jobs.csv')
     jobs = []
     locations = []
-    with open('jobs.csv', 'r') as csv_file:
-        reader = csv.reader(csv_file)
-        for r in reader:
-            jobs.append(r[0])
-    with open('locations.csv', 'r') as csv_file:
-        reader = csv.reader(csv_file)
-        for r in reader:
-            locations.append(r[0])
-    for job in jobs:
-        for location in locations:
-            job_url = generate_job_url(job, location)
-            db.save_url(job, location, 'US', job_url)
+    with open('jobs.csv', 'r') as f:
+        jobs = f.read().split('\n')
+    with open('locations.csv', 'r') as f:
+        locations = f.read().split('\n')
 
-    
-
+    for location in locations:
+        temp_urls = []
+        for job in jobs:
+            temp_urls.append([job, location, 'US', generate_job_url(job, location)])
+        db.save_urls(temp_urls)
 
 
 def add_url_cmd():
