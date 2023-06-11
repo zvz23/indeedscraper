@@ -300,11 +300,15 @@ def main(urls: list):
                 print(f"JOB DATA ALREADY EXISTS: {log_message}")
                 continue
             driver.get(month_url)
-            try:
-                wait_loading(driver, 10)
-            except Exception:
-                send_email(f"FROM {SERVER_NAME}", "WAITINGGGG", EMAIL, PASSWORD)
-                time.sleep(50000)
+            loaded = False
+            while not loaded:
+                try:
+                    wait_loading(driver, 10)
+                    loaded = True
+                except Exception:
+                    send_email(f"FROM {SERVER_NAME}", "RELOADINGGGGGG", EMAIL, PASSWORD)
+                    driver.get(month_url)
+
             if 'is not recognized or not supported' in driver.page_source or 'Unable to process your request' in driver.page_source:
                 print("URL ERROR ", url['URL'])
                 save_defaults(url['URL'], url['JOB'], url['LOCATION'])
