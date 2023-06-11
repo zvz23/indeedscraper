@@ -37,6 +37,47 @@ SERVER_NAME = os.environ.get('SERVER_NAME')
 EMAIL = os.environ.get('EMAIL')
 PASSWORD = os.environ.get('PASSWORD')
 
+MONTHS = {
+    '202305': 'May 2023',
+    '202304': 'April 2023',
+    '202303': 'March 2023',
+    '202302': 'February 2023',
+    '202301': 'January 2023',
+    '202212': 'December 2022',
+    '202211': 'November 2022',
+    '202210': 'October 2022',
+    '202209': 'September 2022',
+    '202208': 'August 2022',
+    '202207': 'July 2022',
+    '202206': 'June 2022',
+    '202205': 'May 2022'
+}
+
+DEFAULT_JOB_DATA = {
+    "competition_score": "N/A",
+    "jobs": "N/A",
+    "job_seekers": "N/A",
+    "average_salary": "N/A",
+    "employers": "N/A",
+    "resumes": "N/A",
+    "resumes_added": "N/A",
+    "reported_years_of_experience": {
+        "0 - 2": "N/A",
+        "3 - 5": "N/A",
+        "6 - 10": "N/A",
+        "11 - 20": "N/A",
+        "21+": "N/A"
+    },
+    "reported_educational_level": {
+        "High School": "N/A",
+        "Associate": "N/A",
+        "Bachelor": "N/A",
+        "Master": "N/A"
+    },
+    "common_employers": [],
+    "common_locations": []
+}
+
 # Waits for a specified time until the loading element is not present or visible to the DOM
 # The loading element will show on the first load of the website and if you select another date in the select option
 
@@ -50,6 +91,14 @@ def wait_vis(driver: uc.Chrome, seconds: float):
         EC.presence_of_element_located((By.XPATH, "//div[contains(@class, 'ia-ThreeBounces')]"))
     )
 
+
+def wait_loading(driver: uc.Chrome, seconds: float):
+    WebDriverWait(driver, seconds).until(
+        EC.presence_of_element_located((By.XPATH, "//div[contains(@class, 'ia-ThreeBounces')]"))
+    )
+    WebDriverWait(driver, seconds).until(
+        EC.invisibility_of_element_located((By.XPATH, "//div[contains(@class, 'ia-ThreeBounces')]"))
+    )
 
 # Gets the selected month from the select input of the website
 
@@ -197,53 +246,6 @@ def scroll_select(driver: uc.Chrome):
 def count_month(selector = parsel.Selector):
     return len(selector.xpath("//select[@name='monthSelect']/option"))
 
-# Scrapes all urls in the database
-
-def main(urls):
-    if len(urls) == 0:
-        print("THERE IS NO URL OR ALL URLS ARE ALREADY SCRAPED")
-        return
-    driver = uc.Chrome(user_data_dir=PROFILE_PATH, headless=True)
-    for url in urls:
-        print("SCRAPING ", url)
-        driver.get(url)
-        wait_invi(driver, 10)
-        if 'is not recognized or not supported' in driver.page_source or 'Unable to process your request' in driver.page_source:
-            print("URL ERROR ", url)
-            continue
-        selector = parsel.Selector(text=driver.page_source)
-        month_count = count_month(selector)
-        job = selector.xpath("//input[@id='input-job-title']/@value").get().strip().lower()
-        location = selector.xpath("//input[@id='input-job-location']/@value").get().strip().lower()
-        for i in range(month_count):
-            if i == 0:
-                wait_invi(driver, 15)
-                month, year = [d.strip().lower() for d in get_selected_month(driver).split(' ')]
-                log_message = f"Job: {job} | Location: {location} | {month} {year}"
-                print(f"SCRAPING {log_message}")
-                if db.is_job_data_exists(url, job, location, month, year):
-                    print(f"ALREADY EXISTS, SKIPPING {log_message}")
-                    continue
-                selector = parsel.Selector(text=driver.page_source)
-                month_data = parse_page(selector)
-                print(f"SAVED {log_message}")
-                db.save_job_data(url, job, location, month, year, json.dumps(month_data))
-            else:
-                scroll_select(driver)
-                month, year = [d.strip().lower() for d in get_selected_month(driver).split(' ')]
-                log_message = f"Job: {job} | Location: {location} | {month} {year}"
-                print(f"SCRAPING {log_message}")
-                if db.is_job_data_exists(url, job, location, month, year):
-                    print(f"ALREADY EXISTS, SKIPPING {log_message}")
-                    continue
-                selector = parsel.Selector(text=driver.page_source)
-                month_data = parse_page(selector)
-                print(f"SAVED {log_message}")
-                db.save_job_data(url, job, location, month, year, json.dumps(month_data))
-        db.set_finished_url(url)
-    print("FINISHED SCRAPING")
-    driver.quit()
-
 # Scrapes the urls from the database with specific date
 def main_date(date: str):
     urls = db.get_all_unfinished_urls()
@@ -277,6 +279,45 @@ def main_date(date: str):
     print("FINISHED SCRAPING")
     driver.quit()
 
+def save_defaults(url: str, job: str, location: str):
+    for m in MONTHS.keys():
+        month, year = MONTHS[m].split(' ')
+        db.save_job_data(url, job, location, month, year, json.dumps(DEFAULT_JOB_DATA))
+
+def main(urls: list):
+    if len(urls) == 0:
+        print("THERE IS NO URL OR ALL URLS ARE ALREADY SCRAPED")
+        return
+    driver = uc.Chrome(user_data_dir=PROFILE_PATH)
+    for url in urls:
+        print("SCRAPING ", url['URL'])
+        for m in MONTHS.keys():
+            month_url = set_date_url(url['URL'], m)
+            month, year = MONTHS[m].split(' ')
+            log_message = f"Job: {url['JOB']} | Location: {url['LOCATION']} | {month} {year}"
+            print(f"SCRAPING: {log_message}")
+            if db.is_job_data_exists(url['URL'], url['JOB'], url['LOCATION'], month, year):
+                print(f"JOB DATA ALREADY EXISTS: {log_message}")
+                continue
+            driver.get(month_url)
+            wait_loading(driver, 10)
+            if 'is not recognized or not supported' in driver.page_source or 'Unable to process your request' in driver.page_source:
+                print("URL ERROR ", url)
+                save_defaults(url['URL'], url['JOB'], url['LOCATION'])
+                break
+            if "We don't have any data for the requested title" in driver.page_source:
+                print("NO DATA ", url)
+                save_defaults(url['URL'], url['JOB'], url['LOCATION'])
+                break
+            selector = parsel.Selector(text=driver.page_source)
+            month_data = parse_page(selector)
+            print(f"SAVED: {log_message}")
+            db.save_job_data(url['URL'], url['JOB'], url['LOCATION'], month, year, json.dumps(month_data))
+        db.set_finished_url(url['URL'])
+    print("FINISHED SCRAPING.")
+    driver.quit()
+
+        
 
 # This function opens the login page of indeed
 
@@ -321,7 +362,7 @@ if __name__ == '__main__':
                     main(urls)
             else:
                 print("Scraping all urls")
-                urls = db.get_all_unfinished_urls()
+                urls = db.get_all_unfinished_urls_row()
                 main(urls)
         elif args.command == 'february':
             print("Scraping February 2023 only")
@@ -363,5 +404,4 @@ if __name__ == '__main__':
                 print("The database was sucessfully cleared.")
     except Exception as e:
         send_email(f"FROM {SERVER_NAME}", str(e), EMAIL, PASSWORD)
-        print(e)
-        print("There was an error. Please check your email and logs")
+        raise e

@@ -1,4 +1,5 @@
 import sqlite3
+import os
 
 """
 Sqlite is used to save the data and to avoid duplicates
@@ -169,4 +170,11 @@ def get_all_unfinished_urls():
         cursor = conn.cursor()
         cursor.execute(f"SELECT URL FROM {URLS_TABLE_NAME} WHERE IS_FINISHED IS NULL")
         return [r[0] for r in cursor.fetchall()]
+
+def get_all_unfinished_urls_row():
+    with sqlite3.connect(DB_NAME) as conn:
+        cursor = conn.cursor()
+        cursor.row_factory = sqlite3.Row
+        cursor.execute(f"SELECT JOB, LOCATION, COUNTRY, URL FROM {URLS_TABLE_NAME} WHERE IS_FINISHED IS NULL")
+        return cursor.fetchall()
     
