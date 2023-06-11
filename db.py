@@ -178,3 +178,20 @@ def get_all_unfinished_urls_row():
         cursor.execute(f"SELECT JOB, LOCATION, COUNTRY, URL FROM {URLS_TABLE_NAME} WHERE IS_FINISHED IS NULL")
         return cursor.fetchall()
     
+def count_urls():
+    with sqlite3.connect(DB_NAME) as conn:
+        cursor = conn.cursor()
+        cursor.execute(f"SELECT COUNT(ID) FROM {URLS_TABLE_NAME}")
+        return cursor.fetchone()[0]
+
+def count_finished():
+    with sqlite3.connect(DB_NAME) as conn:
+        cursor = conn.cursor()
+        cursor.execute(f"SELECT COUNT(ID) FROM {URLS_TABLE_NAME} WHERE IS_FINISHED IS NOT NULL")
+        return cursor.fetchone()[0]
+
+def count_unfinished():
+    with sqlite3.connect(DB_NAME) as conn:
+        cursor = conn.cursor()
+        cursor.execute(f"SELECT COUNT(ID) FROM {URLS_TABLE_NAME} WHERE IS_FINISHED IS NULL")
+        return cursor.fetchone()[0]
