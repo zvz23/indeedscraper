@@ -235,7 +235,6 @@ def main(urls):
                     continue
                 selector = parsel.Selector(text=driver.page_source)
                 month_data = parse_page(selector)
-                print(month_data)
                 print(f"SAVED {log_message}")
                 db.save_job_data(url, job, location, month, year, json.dumps(month_data))
         db.set_finished_url(url)
@@ -361,4 +360,5 @@ if __name__ == '__main__':
                 print("The database was sucessfully cleared.")
     except Exception as e:
         send_email(f"FROM {SERVER_NAME}", str(e), EMAIL, PASSWORD)
+        print(e)
         print("There was an error. Please check your email and logs")
