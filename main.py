@@ -15,6 +15,7 @@ import json
 import db
 import argparse
 import datetime
+import time
 
 load_dotenv()
 # Sets the profile to selenium to persist browser data
@@ -186,6 +187,10 @@ def scroll_select(driver: uc.Chrome):
     actions.send_keys(Keys.ENTER)
     actions.perform()
     wait_vis(driver, 15)
+    wait_invi(driver, 15)
+    time.sleep(2)
+    
+
 
 # Counts the number of options (months) in the select element
 # This function is used to determine how many times the scroll_select function to execute
@@ -226,10 +231,9 @@ def main(urls):
                 db.save_job_data(url, job, location, month, year, json.dumps(month_data))
             else:
                 scroll_select(driver)
-                wait_invi(driver, 15)
-                print(f"SCRAPING {log_message}")
                 month, year = [d.strip().lower() for d in get_selected_month(driver).split(' ')]
                 log_message = f"Job: {job} | Location: {location} | {month} {year}"
+                print(f"SCRAPING {log_message}")
                 if db.is_job_data_exists(url, job, location, month, year):
                     print(f"ALREADY EXISTS, SKIPPING {log_message}")
                     continue
