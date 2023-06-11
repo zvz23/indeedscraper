@@ -199,7 +199,7 @@ def main(urls):
     if len(urls) == 0:
         print("THERE IS NO URL OR ALL URLS ARE ALREADY SCRAPED")
         return
-    driver = uc.Chrome(user_data_dir=PROFILE_PATH)
+    driver = uc.Chrome(user_data_dir=PROFILE_PATH, headless=True)
     for url in urls:
         print("SCRAPING ", url)
         driver.get(url)
@@ -235,6 +235,7 @@ def main(urls):
                     continue
                 selector = parsel.Selector(text=driver.page_source)
                 month_data = parse_page(selector)
+                print(month_data)
                 print(f"SAVED {log_message}")
                 db.save_job_data(url, job, location, month, year, json.dumps(month_data))
         db.set_finished_url(url)
