@@ -188,7 +188,6 @@ def scroll_select(driver: uc.Chrome):
     actions.perform()
     wait_vis(driver, 15)
     wait_invi(driver, 15)
-    time.sleep(2)
     
 
 
