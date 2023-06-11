@@ -300,13 +300,17 @@ def main(urls: list):
                 print(f"JOB DATA ALREADY EXISTS: {log_message}")
                 continue
             driver.get(month_url)
-            wait_loading(driver, 10)
+            try:
+                wait_loading(driver, 10)
+            except Exception:
+                send_email(f"FROM {SERVER_NAME}", "WAITINGGGG", EMAIL, PASSWORD)
+                time.sleep(50000)
             if 'is not recognized or not supported' in driver.page_source or 'Unable to process your request' in driver.page_source:
-                print("URL ERROR ", url)
+                print("URL ERROR ", url['URL'])
                 save_defaults(url['URL'], url['JOB'], url['LOCATION'])
                 break
-            if "We don't have any data for the requested title" in driver.page_source:
-                print("NO DATA ", url)
+            if "We don't have any data for the requested title" in driver.page_source or "We don't have any data for the title and location that you've requested" in driver.page_source:
+                print("NO DATA ", url['URL'])
                 save_defaults(url['URL'], url['JOB'], url['LOCATION'])
                 break
             selector = parsel.Selector(text=driver.page_source)
