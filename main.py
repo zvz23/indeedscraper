@@ -5,6 +5,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.keys import Keys
+from selenium.common.exceptions import TimeoutException
 from send_email import send_email
 from urls import *
 from export import export_conditions_jobs_to_csv
@@ -305,7 +306,7 @@ def main(urls: list):
                 try:
                     wait_loading(driver, 10)
                     loaded = True
-                except TimeoutError:
+                except TimeoutException:
                     driver.get(month_url)
 
             if 'is not recognized or not supported' in driver.page_source or 'Unable to process your request' in driver.page_source:
