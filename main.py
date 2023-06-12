@@ -305,8 +305,7 @@ def main(urls: list):
                 try:
                     wait_loading(driver, 10)
                     loaded = True
-                except Exception:
-                    send_email(f"FROM {SERVER_NAME}", "RELOADINGGGGGG", EMAIL, PASSWORD)
+                except TimeoutError:
                     driver.get(month_url)
 
             if 'is not recognized or not supported' in driver.page_source or 'Unable to process your request' in driver.page_source:
