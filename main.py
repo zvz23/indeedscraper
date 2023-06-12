@@ -289,7 +289,7 @@ def main(urls: list):
     if len(urls) == 0:
         print("THERE IS NO URL OR ALL URLS ARE ALREADY SCRAPED")
         return
-    driver = uc.Chrome(user_data_dir=PROFILE_PATH)
+    driver = uc.Chrome(user_data_dir=PROFILE_PATH, headless=True)
     for url in urls:
         print("SCRAPING ", url['URL'])
         for m in MONTHS.keys():
