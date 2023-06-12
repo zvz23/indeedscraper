@@ -323,6 +323,7 @@ def main(urls: list):
             db.save_job_data(url['URL'], url['JOB'], url['LOCATION'], month, year, json.dumps(month_data))
         db.set_finished_url(url['URL'])
     print("FINISHED SCRAPING.")
+    send_email(f"FROM {SERVER_NAME}", "FINISHED SCRAPING", EMAIL, PASSWORD)
     driver.quit()
 
         
