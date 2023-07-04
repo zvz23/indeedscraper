@@ -283,13 +283,15 @@ def main_date(date: str):
 def save_defaults(url: str, job: str, location: str):
     for m in MONTHS.keys():
         month, year = MONTHS[m].split(' ')
+        if db.is_job_data_exists(url, job, location, month, year):
+            continue
         db.save_job_data(url, job, location, month, year, json.dumps(DEFAULT_JOB_DATA))
 
 def main(urls: list):
     if len(urls) == 0:
         print("THERE IS NO URL OR ALL URLS ARE ALREADY SCRAPED")
         return
-    driver = uc.Chrome(user_data_dir=PROFILE_PATH, headless=True)
+    driver = uc.Chrome(user_data_dir=PROFILE_PATH)
     for url in urls:
         print("SCRAPING ", url['URL'])
         for m in MONTHS.keys():
