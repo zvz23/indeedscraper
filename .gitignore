@@ -3,5 +3,6 @@ venv
 .env
 **/*.db
 *.xlsx
-test.py
 *.log
+*.rar
+*.zip
